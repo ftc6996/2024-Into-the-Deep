@@ -71,8 +71,8 @@ public class Auto_Main extends LinearOpMode {
 
     public static final int HIGH_BASKET_LOCATION= 4500;//4700
     public static final int LOW_BASKET_LOCATION= 2500;
-    public static final int PICKUP_LOCATION= 1200;
-    public static final int HIGH_CHAMBER_LOCATION = 1650;
+    public static final int PICKUP_LOCATION= 1300;
+    public static final int HIGH_CHAMBER_LOCATION = 1750;
 
     public int counter = 0;
     public Gamepad saved_gamepad1 = new Gamepad();
@@ -126,13 +126,13 @@ public class Auto_Main extends LinearOpMode {
                 alliance_color = kRED;
             }
             if (gamepad1.dpad_left || gamepad2.dpad_left) {
-                current_start_location = kSTART_LOCATION_1;
+                current_start_location = kSTART_LOCATION_1;// onedunkandpark 
             }
             if (gamepad1.dpad_up || gamepad2.dpad_up) {
-                current_start_location = kSTART_LOCATION_2;
+                current_start_location = kSTART_LOCATION_2;//twodunkandpark
             }
             if (gamepad1.dpad_right || gamepad2.dpad_right) {
-                current_start_location = kSTART_LOCATION_3;
+                current_start_location = kSTART_LOCATION_3;//specimen (food)
             }
             if (gamepad1.dpad_down || gamepad2.dpad_down) {
                 current_start_location = kNOT_SET;
@@ -144,57 +144,127 @@ public class Auto_Main extends LinearOpMode {
         //waitForStart();
         imu.resetYaw();
         reset_shoulder();
-       // ShoulderUp();
-        //MoveShoulder(DRIVE_SPEED/2, 1300, 5);
-        //MoveShoulder(DRIVE_SPEED, 00, 5);
-        TwoDunkAndPark(ARM_STATUS_LOW_BASKET);
-    /*    
-         shoulder_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
- shoulder_motor.setPower(.75);
- sleep(1000);
- shoulder_motor.setPower(0);
- sleep(1000);
- shoulder_motor.setPower(-.5);
- sleep(1000);
- shoulder_motor.setPower(0);*/
-         //SetArmPosition(ARM_STATUS_HIGH_BASKET);
-        //GripperOpen();
-        //SetArmPosition(ARM_STATUS_HIGH_BASKET);
-        /* orignal */
-        /*
-        encoderDrive(DRIVE_SPEED,  -24,  -24, -24, -24, 5.0);
-        sleep(2000);
-        SetArmPosition(ARM_STATUS_PICKUP);
-        wrist_servo.setPower(0);
-        sleep(500);
-        GripperOpen();
-        sleep(500);
-        wrist_servo.setPower(-1);
-        sleep(500);
-        SetArmPosition(ARM_STATUS_CLOSED); 
-        */
-        
-        //encoderDrive(DRIVE_SPEED,  -36,  36,  36, -36, 5.0);
-
+        if (current_start_location == kSTART_LOCATION_1)
+        {
+            OneDunkAndPark(ARM_STATUS_HIGH_BASKET);
+        }
+        else if (current_start_location == kSTART_LOCATION_2)
+        {
+            TwoDunkAndPark(ARM_STATUS_HIGH_BASKET);
+        }
+        else if (current_start_location == kSTART_LOCATION_3)
+        {
+            Food();
+        }
+       else 
+       {
+           
+       }
     }
 
     public void TwoDunkAndPark(int basket)
     {
-        MoveLeft(DRIVE_SPEED, 6, 5);
+        MoveLeft(DRIVE_SPEED, 10, 5);
         //MoveShoulder(DRIVE_SPEED, 1300, 5);
+        
         ShoulderUp();
         SetArmPosition(basket);
         MoveBackward(DRIVE_SPEED, 4, 5);
         GripperOpen();
+        sleep(500);
         MoveForward(DRIVE_SPEED, 4, 5);
         SetArmPosition(ARM_STATUS_CLOSED);
         //MoveShoulder(DRIVE_SPEED, 0, 5);
+        
         ShoulderDown();
         rotateBy(45); // rotate left 45 degrees
+        MoveRight(DRIVE_SPEED, 13, 5);
+        //SetArmPosition(ARM_STATUS_PICKUP);
+        MoveForward(DRIVE_SPEED, 9, 5);
+        
+        /*
         SetArmPosition(ARM_STATUS_PICKUP);
         MoveForward(DRIVE_SPEED, 10, 5);
         wrist_servo.setPower(1);
         GripperClosed();
+        */
+    }
+    public void Food()
+    {
+        MoveBackward(DRIVE_SPEED, 20.5, 5);
+        ShoulderUp();
+        ExtendArm(1, 500, 5 );
+        MoveBackward(DRIVE_SPEED, 3, 5);
+        //GripperOpen();
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        MoveForward(DRIVE_SPEED, 22, 5);
+        
+        //first mark
+        MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
+        MoveBackward(DRIVE_SPEED, 48, 5);
+        MoveLeft(DRIVE_SPEED, 8, 5);
+        MoveForward(DRIVE_SPEED, 45, 5);
+        
+        //second specimen
+        MoveBackward(DRIVE_SPEED, 12, 5);
+        ShoulderDown();
+        sleep(1000);
+        /*(DRIVE_SPEED, 12, 5);
+        wrist_servo.setPower(-1);
+        GripperClosed();
+        ShoulderUp();
+        MoveRight(DRIVE_SPEED, 48, 5);
+        */
+        
+        //second mark
+        //MoveBackward(DRIVE_SPEED, 48, 5);
+        //MoveLeft(DRIVE_SPEED, 9, 5);
+        //MoveForward(DRIVE_SPEED, 45, 5);
+    }
+    public void Food2() //org
+    {
+        MoveBackward(DRIVE_SPEED, 20.5, 5);
+        ShoulderUp();
+        SetArmPosition(ARM_STATUS_HIGH_CHAMBER);
+        MoveBackward(DRIVE_SPEED, 2, 5);
+        //GripperOpen();
+        ExtendArm(.5, HIGH_CHAMBER_LOCATION- 600, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        MoveForward(DRIVE_SPEED, 22, 5);
+        MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
+        MoveBackward(DRIVE_SPEED, 48, 5);
+        MoveLeft(DRIVE_SPEED, 8, 5);
+        MoveForward(DRIVE_SPEED, 48, 5);
+    }
+    
+    public void OneDunkAndPark(int basket)
+    {
+        MoveLeft(DRIVE_SPEED, 10, 5);
+        //MoveShoulder(DRIVE_SPEED, 1300, 5);
+        
+        ShoulderUp();
+        SetArmPosition(basket);
+        MoveBackward(DRIVE_SPEED, 5, 5);
+        GripperOpen();
+        sleep(500);
+        MoveForward(DRIVE_SPEED, 5, 5);
+        SetArmPosition(ARM_STATUS_CLOSED);
+        //MoveShoulder(DRIVE_SPEED, 0, 5);
+        
+        ShoulderDown();
+        //rotateBy(15); // rotate left 45 degrees
+        MoveForward(DRIVE_SPEED, 24, 5);
+        rotateBy(35);
+        MoveForward(DRIVE_SPEED, 10, 5);
+        /*
+        SetArmPosition(ARM_STATUS_PICKUP);
+        MoveForward(DRIVE_SPEED, 10, 5);
+        wrist_servo.setPower(1);
+        GripperClosed();
+        */
         
         
     }
@@ -550,6 +620,13 @@ public class Auto_Main extends LinearOpMode {
                     current_arm_status_name = "ARM_STATUS_HIGH_BASKET";
                     break;
                 }
+                case ARM_STATUS_HIGH_CHAMBER:
+                {
+                    ExtendArm(1.0, HIGH_CHAMBER_LOCATION, 7);
+                    current_arm_status = ARM_STATUS_HIGH_CHAMBER;
+                    current_arm_status_name = "ARM_STATUS_HIGH_CHAMBER";
+                    break;
+                }
             
         }
     }
@@ -654,15 +731,15 @@ public class Auto_Main extends LinearOpMode {
         }
         if (current_start_location == kSTART_LOCATION_1 )
         {
-            telemetry.addData("Start Position   ", "1");
+            telemetry.addData("Start Position   ", "One dunk and park");
         }
         else if (current_start_location == kSTART_LOCATION_2)
         {
-            telemetry.addData("Start Position   ", "2");
+            telemetry.addData("Start Position   ", "Two dunk and park");
         }
         else if (current_start_location == kSTART_LOCATION_3)
         {
-            telemetry.addData("Start Position   ", "3");
+            telemetry.addData("Start Position   ", "Specimen (Food)");
         }
         else
         {
