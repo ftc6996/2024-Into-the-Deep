@@ -178,15 +178,36 @@ public class Auto_Main extends LinearOpMode {
         
         ShoulderDown();
         rotateBy(45); // rotate left 45 degrees
-        MoveRight(DRIVE_SPEED, 13, 5);
-        //SetArmPosition(ARM_STATUS_PICKUP);
-        MoveForward(DRIVE_SPEED, 9, 5);
+        MoveRight(DRIVE_SPEED, 4, 5);
+        GripperOpen();
+        ExtendArm(1, 2768, 5);
+        wrist_servo.setPower(1);
+        sleep(1000);
+        GripperClosed();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        rotateBy(-45);
+        ShoulderUp();
+        SetArmPosition(basket);
+        MoveBackward(DRIVE_SPEED, 6, 5);
+        wrist_servo.setPower(-1);
+        sleep(500);
+        GripperOpen();
+        sleep(500);
+
         
         /*
-        SetArmPosition(ARM_STATUS_PICKUP);
-        MoveForward(DRIVE_SPEED, 10, 5);
+        //MoveForward(DRIVE_SPEED, 9, 5);
+        
+        
+        //SetArmPosition(ARM_STATUS_PICKUP);
+        //MoveForward(DRIVE_SPEED, 10, 5);
         wrist_servo.setPower(1);
+        GripperOpen();
         GripperClosed();
+        
+        
+        MoveBackward(DRIVE_SPEED, 10, 5);
+        MoveLeft(DRIVE_SPEED, 13, 5);
         */
     }
     public void Food()
@@ -195,21 +216,43 @@ public class Auto_Main extends LinearOpMode {
         ShoulderUp();
         ExtendArm(1, 500, 5 );
         MoveBackward(DRIVE_SPEED, 3, 5);
-        //GripperOpen();
         ExtendArm(1, 2400, 5 );
         GripperOpen();
         SetArmPosition(ARM_STATUS_CLOSED);
         MoveForward(DRIVE_SPEED, 22, 5);
-        
+        ShoulderDown();
         //first mark
         MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
         MoveBackward(DRIVE_SPEED, 48, 5);
         MoveLeft(DRIVE_SPEED, 8, 5);
         MoveForward(DRIVE_SPEED, 45, 5);
+        double current = getHeading();
+        rotateBy(-current);
         
         //second specimen
-        MoveBackward(DRIVE_SPEED, 12, 5);
+        MoveBackward(DRIVE_SPEED, 10, 5);
         ShoulderDown();
+        wrist_servo.setPower(-1);
+        MoveForward(DRIVE_SPEED, 12, 5);
+        MoveLeft(DRIVE_SPEED, 4, 5);
+        GripperOpen();
+        MoveForward(DRIVE_SPEED, 4, 5);
+        wrist_servo.setPower(1);
+        sleep(1000);
+        GripperClosed();
+        ShoulderUp();
+        
+        //Hooking it on the bar
+        MoveRight(DRIVE_SPEED, 38, 5);
+        MoveBackward(DRIVE_SPEED, 20, 5 );
+        /*MoveBackward(DRIVE_SPEED, 4, 5);
+        MoveRight(DRIVE_SPEED, 4, 5);
+        MoveBackward(DRIVE_SPEED, 12, 55);
+        ShoulderUp();
+        MoveRight(DRIVE_SPEED, 3, 10);
+        */
+        
+        
         sleep(1000);
         /*(DRIVE_SPEED, 12, 5);
         wrist_servo.setPower(-1);
