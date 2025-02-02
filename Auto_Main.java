@@ -47,7 +47,8 @@ public class Auto_Main extends LinearOpMode {
     public DigitalChannel led_green = null;
     public Servo      gripper_servo = null;
     public CRServo        wrist_servo = null;
-    
+    public DistanceSensor distance_sensor = null;
+
     static final double MAX_MOVE_SPEED = 1.0;
     static final double MIN_MOVE_SPEED = 0.2;
     static final double SPEED_INCREMENT = 0.1;
@@ -169,6 +170,7 @@ public class Auto_Main extends LinearOpMode {
         
         ShoulderUp();
         SetArmPosition(basket);
+        sleep(500);
         MoveBackward(DRIVE_SPEED, 4, 5);
         GripperOpen();
         sleep(500);
@@ -182,76 +184,69 @@ public class Auto_Main extends LinearOpMode {
         GripperOpen();
         ExtendArm(1, 2768, 5);
         wrist_servo.setPower(1);
-        sleep(1000);
+        sleep(500);
         GripperClosed();
         SetArmPosition(ARM_STATUS_CLOSED);
+        
         rotateBy(-45);
         ShoulderUp();
         SetArmPosition(basket);
         MoveBackward(DRIVE_SPEED, 6, 5);
         wrist_servo.setPower(-1);
-        sleep(500);
+        sleep(1000);
         GripperOpen();
         sleep(500);
-
-        
-        /*
-        //MoveForward(DRIVE_SPEED, 9, 5);
-        
-        
-        //SetArmPosition(ARM_STATUS_PICKUP);
-        //MoveForward(DRIVE_SPEED, 10, 5);
         wrist_servo.setPower(1);
-        GripperOpen();
-        GripperClosed();
-        
-        
-        MoveBackward(DRIVE_SPEED, 10, 5);
-        MoveLeft(DRIVE_SPEED, 13, 5);
-        */
+        sleep(500);
+        MoveForward(DRIVE_SPEED, 4, 5);
+        rotateBy(20);
+        MoveForward(1, 42, 5);
+        SetArmPosition(ARM_STATUS_CLOSED);
+        ShoulderDown();
     }
+    
     public void Food()
     {
-        MoveBackward(DRIVE_SPEED, 20.5, 5);
+        //hook starting specimen
+        MoveBackward(DRIVE_SPEED, 21, 5);
         ShoulderUp();
         ExtendArm(1, 500, 5 );
-        MoveBackward(DRIVE_SPEED, 3, 5);
+        MoveBackward(DRIVE_SPEED, 2.5, 5);
         ExtendArm(1, 2400, 5 );
         GripperOpen();
         SetArmPosition(ARM_STATUS_CLOSED);
-        MoveForward(DRIVE_SPEED, 22, 5);
+        MoveForward(DRIVE_SPEED, 5, 5);
         ShoulderDown();
+
         //first mark
         MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
-        MoveBackward(DRIVE_SPEED, 48, 5);
-        MoveLeft(DRIVE_SPEED, 8, 5);
+        MoveBackward(DRIVE_SPEED, 32, 5);
+        MoveLeft(DRIVE_SPEED, 10, 5);
         MoveForward(DRIVE_SPEED, 45, 5);
         double current = getHeading();
         rotateBy(-current);
         
         //second specimen
-        MoveBackward(DRIVE_SPEED, 10, 5);
+        MoveBackward(DRIVE_SPEED, 7.5, 5);
         ShoulderDown();
-        wrist_servo.setPower(-1);
-        MoveForward(DRIVE_SPEED, 12, 5);
-        MoveLeft(DRIVE_SPEED, 4, 5);
+        wrist_servo.setPower(-0.3);
         GripperOpen();
-        MoveForward(DRIVE_SPEED, 4, 5);
-        wrist_servo.setPower(1);
+        double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+        MoveForward(.3, current_distance - 4, 5);
+        //MoveForward(DRIVE_SPEED, 6, 5);
+        //MoveLeft(DRIVE_SPEED, 4, 5);
+        //GripperOpen();
+        //MoveForward(DRIVE_SPEED, 5, 5);
+        //wrist_servo.setPower(1);
         sleep(1000);
         GripperClosed();
         ShoulderUp();
         
         //Hooking it on the bar
         MoveRight(DRIVE_SPEED, 38, 5);
-        MoveBackward(DRIVE_SPEED, 20, 5 );
-        /*MoveBackward(DRIVE_SPEED, 4, 5);
-        MoveRight(DRIVE_SPEED, 4, 5);
-        MoveBackward(DRIVE_SPEED, 12, 55);
-        ShoulderUp();
-        MoveRight(DRIVE_SPEED, 3, 10);
-        */
-        
+        sleep(500);
+        MoveBackward(DRIVE_SPEED, 21, 5 );
+        ExtendArm(1, 2400, 5 );
         
         sleep(1000);
         /*(DRIVE_SPEED, 12, 5);
@@ -464,6 +459,8 @@ public class Auto_Main extends LinearOpMode {
         init_shoulder();
         init_gripper();
         init_wrist();
+        
+        distance_sensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
         
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(orientation);
