@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -48,7 +50,6 @@ public class Auto_Main extends LinearOpMode {
     public Servo      gripper_servo = null;
     public CRServo        wrist_servo = null;
     public DistanceSensor distance_sensor = null;
-
     static final double MAX_MOVE_SPEED = 1.0;
     static final double MIN_MOVE_SPEED = 0.2;
     static final double SPEED_INCREMENT = 0.1;
@@ -117,7 +118,7 @@ public class Auto_Main extends LinearOpMode {
 
         init_all();
         GripperClosed();
-        wrist_servo.setPower(-1);
+        wrist_servo.setPower(0);
         // Wait for the game to start (driver presses START)
         while(!this.isStarted() && !this.isStopRequested()) {
             if (gamepad1.x || gamepad2.x) {
@@ -159,7 +160,16 @@ public class Auto_Main extends LinearOpMode {
         }
        else 
        {
+           Three_Specimen_Auto();
            
+           /*GripperOpen();
+           double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+           MoveForward(.3, current_distance - 4, 5);
+        telemetry.addData("Distance", distance_sensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+            GripperClosed();
+        sleep(5000);  
+           //MoveToDistance(6); */
        }
     }
 
@@ -204,11 +214,9 @@ public class Auto_Main extends LinearOpMode {
         SetArmPosition(ARM_STATUS_CLOSED);
         ShoulderDown();
     }
-    
     public void Food()
     {
-        //hook starting specimen
-        MoveBackward(DRIVE_SPEED, 21, 5);
+        MoveBackward(DRIVE_SPEED, 20, 5);
         ShoulderUp();
         ExtendArm(1, 500, 5 );
         MoveBackward(DRIVE_SPEED, 2.5, 5);
@@ -217,7 +225,7 @@ public class Auto_Main extends LinearOpMode {
         SetArmPosition(ARM_STATUS_CLOSED);
         MoveForward(DRIVE_SPEED, 5, 5);
         ShoulderDown();
-
+        
         //first mark
         MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
         MoveBackward(DRIVE_SPEED, 32, 5);
@@ -227,55 +235,96 @@ public class Auto_Main extends LinearOpMode {
         rotateBy(-current);
         
         //second specimen
-        MoveBackward(DRIVE_SPEED, 7.5, 5);
+        MoveBackward(DRIVE_SPEED, 6.5, 5);
         ShoulderDown();
-        wrist_servo.setPower(-0.3);
+        wrist_servo.setPower(0.3);//why sign flip?
         GripperOpen();
-        double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
-        MoveForward(.3, current_distance - 4, 5);
-        //MoveForward(DRIVE_SPEED, 6, 5);
-        //MoveLeft(DRIVE_SPEED, 4, 5);
-        //GripperOpen();
-        //MoveForward(DRIVE_SPEED, 5, 5);
-        //wrist_servo.setPower(1);
-        sleep(1000);
+        double current_distance = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            current_distance = current_distance + distance_sensor.getDistance(DistanceUnit.INCH);
+        }
+        current_distance /= 4;
+        telemetry.addData("Distance", current_distance);
+        telemetry.update();
+        MoveForward(.3, current_distance - 3, 5);
+        sleep(500);
         GripperClosed();
         ShoulderUp();
         
         //Hooking it on the bar
         MoveRight(DRIVE_SPEED, 38, 5);
         sleep(500);
-        MoveBackward(DRIVE_SPEED, 21, 5 );
+        MoveBackward(DRIVE_SPEED, 21.5, 5 );
         ExtendArm(1, 2400, 5 );
-        
-        sleep(1000);
-        /*(DRIVE_SPEED, 12, 5);
-        wrist_servo.setPower(-1);
-        GripperClosed();
-        ShoulderUp();
-        MoveRight(DRIVE_SPEED, 48, 5);
-        */
-        
-        //second mark
-        //MoveBackward(DRIVE_SPEED, 48, 5);
-        //MoveLeft(DRIVE_SPEED, 9, 5);
-        //MoveForward(DRIVE_SPEED, 45, 5);
-    }
-    public void Food2() //org
-    {
-        MoveBackward(DRIVE_SPEED, 20.5, 5);
-        ShoulderUp();
-        SetArmPosition(ARM_STATUS_HIGH_CHAMBER);
-        MoveBackward(DRIVE_SPEED, 2, 5);
-        //GripperOpen();
-        ExtendArm(.5, HIGH_CHAMBER_LOCATION- 600, 5 );
         GripperOpen();
         SetArmPosition(ARM_STATUS_CLOSED);
-        MoveForward(DRIVE_SPEED, 22, 5);
-        MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
-        MoveBackward(DRIVE_SPEED, 48, 5);
-        MoveLeft(DRIVE_SPEED, 8, 5);
-        MoveForward(DRIVE_SPEED, 48, 5);
+        MoveForward(DRIVE_SPEED, 5, 5);
+        MoveLeft(DRIVE_SPEED, 32, 5);
+        MoveBackward(DRIVE_SPEED, 22, 5);
+        
+        
+        sleep(1000);
+       
+    }
+    
+    public void Three_Specimen_Auto()
+    {
+        MoveBackward(DRIVE_SPEED, 21, 5);
+        ShoulderUp();
+        ExtendArm(1, 500, 5 );
+        MoveBackward(DRIVE_SPEED, 2.5, 5);
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        
+        MoveForward(DRIVE_SPEED, 5, 5);
+        ShoulderDown();
+        wrist_servo.setPower(-0.1);
+        GripperOpen();
+        MoveLeft(DRIVE_SPEED, 50, 5);// used to be 48 not 42
+        double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+        MoveForward(.3, current_distance - 5, 5);
+        
+        
+        
+        sleep(500);
+        GripperClosed();
+        ShoulderUp();
+        
+//moving to score 2nd specium
+        MoveRight(DRIVE_SPEED, 38, 5);
+        sleep(500);
+        MoveBackward(DRIVE_SPEED, 21.5, 5 );
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+       
+       //move to get 3rd specium
+        MoveForward(DRIVE_SPEED, 5, 5);
+        ShoulderDown();
+        wrist_servo.setPower(-0.1);
+        GripperOpen();
+        MoveLeft(DRIVE_SPEED, 50, 5);// used to be 48 not 42
+        current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+        MoveForward(.3, current_distance - 5, 5);
+        GripperClosed();
+        ShoulderUp();
+        
+        //move to score 3rd
+        MoveRight(DRIVE_SPEED, 38, 5);
+        sleep(500);
+        MoveBackward(DRIVE_SPEED, 21.5, 5 );
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        MoveForward(DRIVE_SPEED, 5, 5);
+        MoveLeft(DRIVE_SPEED, 32, 5);
+        MoveBackward(DRIVE_SPEED, 22, 5);
+        
+        
+        sleep(1000);
+       
     }
     
     public void OneDunkAndPark(int basket)
@@ -303,7 +352,37 @@ public class Auto_Main extends LinearOpMode {
         wrist_servo.setPower(1);
         GripperClosed();
         */
+    }
+    
+    
+    public void MoveToDistance(double target_distance){
+        left_front_drive.setPower(.3);
+        right_front_drive.setPower(.3);
+        left_rear_drive.setPower(.3);
+        right_rear_drive.setPower(.3);
+        runtime.reset();
+        double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+        while ((current_distance > target_distance))// && (runtime.seconds() < 3))
+        {
+            current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+            telemetry.addData("Distance", distance_sensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+            if (current_distance < target_distance)
+            {
+                   left_front_drive.setPower(0);
+            right_front_drive.setPower(0);
+            left_rear_drive.setPower(0);
+            right_rear_drive.setPower(0);  
+                break;
+            }
+        }
         
+    
+              // Stop all motion;
+            left_front_drive.setPower(0);
+            right_front_drive.setPower(0);
+            left_rear_drive.setPower(0);
+            right_rear_drive.setPower(0);      
         
     }
     public void ShoulderUp()
@@ -459,7 +538,6 @@ public class Auto_Main extends LinearOpMode {
         init_shoulder();
         init_gripper();
         init_wrist();
-        
         distance_sensor = hardwareMap.get(DistanceSensor.class, "distance_sensor");
         
         imu = hardwareMap.get(IMU.class, "imu");
