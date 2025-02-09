@@ -43,7 +43,7 @@ public class DriverController extends OpMode{
     static final double MIN_MOVE_SPEED = 0.2;
     static final double SPEED_INCREMENT = 0.1;
     public double current_speed = .5;
-    
+    public double current_shoulder_speed = .7;
     
     public static final double GRIPPER_OPEN = 0.70;
     public static final double GRIPPER_CLOSED = 1.0;
@@ -66,13 +66,16 @@ public class DriverController extends OpMode{
     public static final int LOW_BASKET_LOCATION= 2500;
     public static final int PICKUP_LOCATION= 1800;
     
-    public static final int ARM_EXTEND_MAX= 2549;
+    public static final int ARM_EXTEND_MAX= 2050;
+    public static final int ARM_HANG_MAX = 12180; //1197 if needed
     
     public static final int SHOULDER_LOW_POSITION = 600;
     
     static final int    DRIVER_MODE_FIELD = 0;
     static final int    DRIVER_MODE_ROBOT = 1;
     public int driver_mode = DRIVER_MODE_ROBOT;
+    
+    
     
     static final int    LED_STATUS_OFF = 0;
     static final int    LED_STATUS_GREEN = 1;
@@ -109,6 +112,7 @@ public class DriverController extends OpMode{
     private void init_gripper()
     {
         gripper_servo = hardwareMap.get(Servo.class, "gripper_servo");
+        gripper_servo.setDirection(Servo.Direction.REVERSE);
         //gripper_servo.resetDeviceConfigurationForOpMode();
     }
     
@@ -242,7 +246,7 @@ public class DriverController extends OpMode{
         {
             shoulder_stick = 0;
         }
-        shoulder_stick = shoulder_stick * .5;
+        shoulder_stick = shoulder_stick * current_shoulder_speed;
         
         //driver controls
         if (gamepad1.options)
@@ -290,6 +294,25 @@ public class DriverController extends OpMode{
                 GripperOpen();
             }
         }
+        
+        if (gamepad2.dpad_up && !saved_gamepad2.dpad_up)
+        {
+            current_shoulder_speed += SPEED_INCREMENT;
+            if (current_shoulder_speed > MAX_MOVE_SPEED)
+            {
+                current_shoulder_speed = MAX_MOVE_SPEED;
+            }
+        }
+        else if (gamepad2.dpad_down && !saved_gamepad2.dpad_down)
+        {
+            current_shoulder_speed -= SPEED_INCREMENT;
+            if (current_shoulder_speed < MIN_MOVE_SPEED)
+            {
+                current_shoulder_speed = MIN_MOVE_SPEED;
+            }
+        }
+
+
         if (ARM_IS_MOVING)
         {
             if (!arm_extend_motor.isBusy())
@@ -339,7 +362,7 @@ public class DriverController extends OpMode{
         else if (outtake_trigger > 0)
         {
             //wrist_servo.setPosition(0);
-            wrist_servo.setPower(-1);
+            wrist_servo.setPower(-.8);
         }
         else 
         {
@@ -415,6 +438,10 @@ public class DriverController extends OpMode{
         {
             if (arm_extend_motor.getCurrentPosition() < 1000)
             {
+                if (shoulder_stick < 0)
+                {
+                    shoulder_stick *= .7;
+                }
                 shoulder_motor.setPower(shoulder_stick); 
             }
         }

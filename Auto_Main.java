@@ -1,3 +1,5 @@
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -190,19 +192,21 @@ public class Auto_Main extends LinearOpMode {
         
         ShoulderDown();
         rotateBy(45); // rotate left 45 degrees
-        MoveRight(DRIVE_SPEED, 4, 5);
+        MoveRight(DRIVE_SPEED, 6, 5);//old 4
         GripperOpen();
-        ExtendArm(1, 2768, 5);
+        ExtendArm(1, 2640, 5);// used to be 100 more
         wrist_servo.setPower(1);
         sleep(500);
         GripperClosed();
+        sleep(500);
+        wrist_servo.setPower(0);
         SetArmPosition(ARM_STATUS_CLOSED);
         
         rotateBy(-45);
         ShoulderUp();
         SetArmPosition(basket);
         MoveBackward(DRIVE_SPEED, 6, 5);
-        wrist_servo.setPower(-1);
+        //wrist_servo.setPower(-1);
         sleep(1000);
         GripperOpen();
         sleep(500);
@@ -237,7 +241,7 @@ public class Auto_Main extends LinearOpMode {
         //second specimen
         MoveBackward(DRIVE_SPEED, 6.5, 5);
         ShoulderDown();
-        wrist_servo.setPower(0.3);//why sign flip?
+        wrist_servo.setPower(0); //was 0.3
         GripperOpen();
         double current_distance = 0;
         for(int i = 0; i < 4; i++)
@@ -250,6 +254,7 @@ public class Auto_Main extends LinearOpMode {
         MoveForward(.3, current_distance - 3, 5);
         sleep(500);
         GripperClosed();
+        wrist_servo.setPower(-.3);
         ShoulderUp();
         
         //Hooking it on the bar
@@ -548,6 +553,7 @@ public class Auto_Main extends LinearOpMode {
     private void init_gripper()
     {
         gripper_servo = hardwareMap.get(Servo.class, "gripper_servo");
+        gripper_servo.setDirection(Servo.Direction.REVERSE);
         //gripper_servo.resetDeviceConfigurationForOpMode();
     }
     
