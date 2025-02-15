@@ -120,7 +120,7 @@ public class Auto_Main extends LinearOpMode {
 
         init_all();
         GripperClosed();
-        wrist_servo.setPower(0);
+        //wrist_servo.setPower(0);
         // Wait for the game to start (driver presses START)
         while(!this.isStarted() && !this.isStopRequested()) {
             if (gamepad1.x || gamepad2.x) {
@@ -177,6 +177,7 @@ public class Auto_Main extends LinearOpMode {
 
     public void TwoDunkAndPark(int basket)
     {
+        wrist_servo.setPower(0);
         MoveLeft(DRIVE_SPEED, 10, 5);
         //MoveShoulder(DRIVE_SPEED, 1300, 5);
         
@@ -192,7 +193,7 @@ public class Auto_Main extends LinearOpMode {
         
         ShoulderDown();
         rotateBy(45); // rotate left 45 degrees
-        MoveRight(DRIVE_SPEED, 6, 5);//old 4
+        MoveRight(DRIVE_SPEED, 4, 5);//old 4, after first match changed back to 4 from 6
         GripperOpen();
         ExtendArm(1, 2640, 5);// used to be 100 more
         wrist_servo.setPower(1);
@@ -206,8 +207,9 @@ public class Auto_Main extends LinearOpMode {
         ShoulderUp();
         SetArmPosition(basket);
         MoveBackward(DRIVE_SPEED, 6, 5);
+        MoveLeft(DRIVE_SPEED, 4, 5);
         //wrist_servo.setPower(-1);
-        sleep(1000);
+        sleep(500);//was 1000
         GripperOpen();
         sleep(500);
         wrist_servo.setPower(1);
@@ -220,6 +222,7 @@ public class Auto_Main extends LinearOpMode {
     }
     public void Food()
     {
+        wrist_servo.setPower(0);
         MoveBackward(DRIVE_SPEED, 20, 5);
         ShoulderUp();
         ExtendArm(1, 500, 5 );
@@ -254,19 +257,21 @@ public class Auto_Main extends LinearOpMode {
         MoveForward(.3, current_distance - 3, 5);
         sleep(500);
         GripperClosed();
+        sleep(500);
         wrist_servo.setPower(-.3);
         ShoulderUp();
         
         //Hooking it on the bar
+        MoveBackward(DRIVE_SPEED, 11.5, 5 );
         MoveRight(DRIVE_SPEED, 38, 5);
         sleep(500);
-        MoveBackward(DRIVE_SPEED, 21.5, 5 );
+        MoveBackward(DRIVE_SPEED, 10.5, 5 );//21.5 was the origional
         ExtendArm(1, 2400, 5 );
         GripperOpen();
         SetArmPosition(ARM_STATUS_CLOSED);
         MoveForward(DRIVE_SPEED, 5, 5);
-        MoveLeft(DRIVE_SPEED, 32, 5);
-        MoveBackward(DRIVE_SPEED, 22, 5);
+        MoveLeft(DRIVE_SPEED, 28, 5); // used to be 32
+        MoveForward(DRIVE_SPEED, 18, 5); //used tto be 22
         
         
         sleep(1000);

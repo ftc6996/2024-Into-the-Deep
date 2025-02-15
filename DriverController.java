@@ -66,7 +66,7 @@ public class DriverController extends OpMode{
     public static final int LOW_BASKET_LOCATION= 2500;
     public static final int PICKUP_LOCATION= 1800;
     
-    public static final int ARM_EXTEND_MAX= 2050;
+    public static final int ARM_EXTEND_MAX= 2000;
     public static final int ARM_HANG_MAX = 12180; //1197 if needed
     
     public static final int SHOULDER_LOW_POSITION = 600;
