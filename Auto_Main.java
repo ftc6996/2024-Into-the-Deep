@@ -114,7 +114,7 @@ public class Auto_Main extends LinearOpMode {
     public  double          targetHeading = 0;
     private double          driveSpeed    = 0;
     private double          turnSpeed     = 0;
-    
+    private boolean         delay_move = true;
     @Override
     public void runOpMode() {
 
@@ -162,7 +162,12 @@ public class Auto_Main extends LinearOpMode {
         }
        else 
        {
-           Three_Specimen_Auto();
+           //Three_Specimen_Auto();
+           delay_move = true;
+           encoderDrive2(1, 60, 0, 0, 60, 5);
+           rotateBy(-90);
+           double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+           MoveForward(.3, current_distance - 4, 5);
            
            /*GripperOpen();
            double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
@@ -178,22 +183,27 @@ public class Auto_Main extends LinearOpMode {
     public void TwoDunkAndPark(int basket)
     {
         wrist_servo.setPower(0);
-        MoveLeft(DRIVE_SPEED, 10, 5);
-        //MoveShoulder(DRIVE_SPEED, 1300, 5);
+        double tmp_speed = .7; //DRIVE_SPEED
+        MoveLeft(tmp_speed, 10, 5);
         
         ShoulderUp();
         SetArmPosition(basket);
-        sleep(500);
-        MoveBackward(DRIVE_SPEED, 4, 5);
+        sleep(250);
+        MoveBackward(tmp_speed, 4, 5);
         GripperOpen();
-        sleep(500);
-        MoveForward(DRIVE_SPEED, 4, 5);
-        SetArmPosition(ARM_STATUS_CLOSED);
-        //MoveShoulder(DRIVE_SPEED, 0, 5);
-        
-        ShoulderDown();
+        sleep(250);
+                            arm_extend_motor.setTargetPosition(PICKUP_LOCATION);
+            arm_extend_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            arm_extend_motor.setPower(1);
+        MoveForward(tmp_speed, 4, 5);
+        //SetArmPosition(ARM_STATUS_CLOSED);
+
+            
+        //ShoulderDown();
+        shoulder_motor.setPower(-.5);
         rotateBy(45); // rotate left 45 degrees
-        MoveRight(DRIVE_SPEED, 4, 5);//old 4, after first match changed back to 4 from 6
+        shoulder_motor.setPower(0);
+        MoveRight(tmp_speed, 5, 5);//old 4, after first match changed back to 4 from 6
         GripperOpen();
         ExtendArm(1, 2640, 5);// used to be 100 more
         wrist_servo.setPower(1);
@@ -203,18 +213,48 @@ public class Auto_Main extends LinearOpMode {
         wrist_servo.setPower(0);
         SetArmPosition(ARM_STATUS_CLOSED);
         
+        shoulder_motor.setPower(.75);
         rotateBy(-45);
-        ShoulderUp();
+        //ShoulderUp();
+        shoulder_motor.setPower(0);
         SetArmPosition(basket);
-        MoveBackward(DRIVE_SPEED, 6, 5);
-        MoveLeft(DRIVE_SPEED, 4, 5);
+        //MoveBackward(tmp_speed, 6, 5);
+        //MoveLeft(tmp_speed, 4, 5); //FL BR
+        
+        delay_move = false;
+        encoderDrive2(.7, -13, 0, 0, -13, 5); //-11
+
+
         //wrist_servo.setPower(-1);
-        sleep(500);//was 1000
+        //sleep(250);//was 1000
         GripperOpen();
         sleep(500);
+        
+     
+                        
+            arm_extend_motor.setTargetPosition(PICKUP_LOCATION);
+            arm_extend_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            arm_extend_motor.setPower(1);
+            
+           encoderDrive2(.7, 10, 30, 10, 30, 5);
+           encoderDrive2(.7, 16, 16, 16, 16, 5); //
+           encoderDrive2(.7, 0, 24, 24, 0, 5);
+           encoderDrive2(.7, -42, -42, -42, -42, 5);
+           encoderDrive2(.7, 36, 36, 36, 36, 5); //
+           encoderDrive2(.7, -7, 7, 7, -7, 5); //was 6
+           encoderDrive2(.7, -24, -24, -24, -24, 5);
+           
+           
+            encoderDrive2(1, 60, 0, 0, 60, 5);
+           rotateBy(-90);
+           double current_distance = distance_sensor.getDistance(DistanceUnit.INCH);
+           MoveForward(.3, current_distance - 4, 5);
+           
+                if (true)
+            return;
         wrist_servo.setPower(1);
         sleep(500);
-        MoveForward(DRIVE_SPEED, 4, 5);
+        MoveForward(tmp_speed, 4, 5);
         rotateBy(20);
         MoveForward(1, 42, 5);
         SetArmPosition(ARM_STATUS_CLOSED);
@@ -222,7 +262,7 @@ public class Auto_Main extends LinearOpMode {
     }
     public void Food()
     {
-        wrist_servo.setPower(0);
+  wrist_servo.setPower(0);
         MoveBackward(DRIVE_SPEED, 20, 5);
         ShoulderUp();
         ExtendArm(1, 500, 5 );
@@ -405,7 +445,7 @@ public class Auto_Main extends LinearOpMode {
     public void ShoulderDown()
     {
         shoulder_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shoulder_motor.setPower(-.5);
+        shoulder_motor.setPower(-.75);//.5
         sleep(1000);
         shoulder_motor.setPower(0);
     }
@@ -525,10 +565,83 @@ public class Auto_Main extends LinearOpMode {
             left_rear_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             right_rear_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            sleep(250);   // optional pause after each move.
+            if (delay_move)
+                sleep(250);   // optional pause after each move.
         }
     }
 
+    public void encoderDrive2(double speed,
+                             double left_front_driveInches, double right_front_driveInches, 
+                             double left_rear_driveInches, double right_rear_driveInches,
+                             double timeoutS) {
+        int newleft_front_driveTarget;
+        int newright_front_driveTarget;
+        int newleft_rear_driveTarget;
+        int newright_rear_driveTarget;
+
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newleft_front_driveTarget = left_front_drive.getCurrentPosition() + (int)(left_front_driveInches * COUNTS_PER_INCH);
+            newright_front_driveTarget = right_front_drive.getCurrentPosition() + (int)(right_front_driveInches * COUNTS_PER_INCH);
+            newleft_rear_driveTarget = left_rear_drive.getCurrentPosition() + (int)(left_rear_driveInches * COUNTS_PER_INCH);
+            newright_rear_driveTarget = right_rear_drive.getCurrentPosition() + (int)(right_rear_driveInches * COUNTS_PER_INCH);
+            
+            left_front_drive.setTargetPosition(newleft_front_driveTarget);
+            right_front_drive.setTargetPosition(newright_front_driveTarget);
+            left_rear_drive.setTargetPosition(newleft_rear_driveTarget);
+            right_rear_drive.setTargetPosition(newright_rear_driveTarget);
+
+            // Turn On RUN_TO_POSITION
+            left_front_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right_front_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            left_rear_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right_rear_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            left_front_drive.setPower(Math.abs(speed));
+            right_front_drive.setPower(Math.abs(speed));
+            left_rear_drive.setPower(Math.abs(speed));
+            right_rear_drive.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                   (runtime.seconds() < timeoutS) &&
+                   (left_front_drive.isBusy() || right_front_drive.isBusy() || 
+                   left_rear_drive.isBusy() || right_rear_drive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to",  "Front %7d :%7d Rear %7d :%7d", newleft_front_driveTarget,  
+                newright_front_driveTarget,  newleft_rear_driveTarget,  newright_rear_driveTarget);
+                telemetry.addData("Currently at",  " Front %7d :%7d Rear %7d :%7d", left_front_drive.getCurrentPosition(), right_front_drive.getCurrentPosition(), left_rear_drive.getCurrentPosition(), right_rear_drive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            left_front_drive.setPower(0);
+            right_front_drive.setPower(0);
+            left_rear_drive.setPower(0);
+            right_rear_drive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            left_front_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            right_front_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            left_rear_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            right_rear_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            if (delay_move)
+                sleep(250);   // optional pause after each move.
+        }
+    }
+
+  
     public boolean isBusy()
     {
         return (left_front_drive.isBusy() && right_front_drive.isBusy() && left_rear_drive.isBusy() && right_rear_drive.isBusy());
