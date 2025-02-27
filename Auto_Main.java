@@ -262,7 +262,71 @@ public class Auto_Main extends LinearOpMode {
     }
     public void Food()
     {
-  wrist_servo.setPower(0);
+        wrist_servo.setPower(0);
+        MoveBackward(DRIVE_SPEED, 20, 5);
+        ShoulderUp();
+        ExtendArm(1, 500, 5 );
+        MoveBackward(DRIVE_SPEED, 2.5, 5);
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        MoveForward(DRIVE_SPEED, 5, 5);
+        //ShoulderDown();
+        shoulder_motor.setPower(-.5);
+        
+        //first mark
+        MoveLeft(DRIVE_SPEED, 38, 5);// used to be 48 not 42
+        shoulder_motor.setPower(0);
+        
+        MoveBackward(DRIVE_SPEED, 32, 5);
+        MoveLeft(DRIVE_SPEED, 10, 5);
+        MoveForward(DRIVE_SPEED, 45, 5);
+        double current = getHeading();
+        rotateBy(-current);
+        
+        //second specimen
+        MoveBackward(DRIVE_SPEED, 10, 5);//6.5
+        //ShoulderDown(); //not needed
+        wrist_servo.setPower(0); //was 0.3
+        GripperOpen();
+        double current_distance = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            current_distance = current_distance + distance_sensor.getDistance(DistanceUnit.INCH);
+        }
+        current_distance /= 4;
+        telemetry.addData("Distance", current_distance);
+        telemetry.update();
+        MoveForward(.3, current_distance - 3, 5);
+        sleep(500);
+        GripperClosed();
+        sleep(500);
+        wrist_servo.setPower(-.3);
+        ShoulderUp();
+        
+        //Hooking it on the bar
+        MoveBackward(DRIVE_SPEED, 11.5, 5 );
+        MoveRight(DRIVE_SPEED, 38, 5);
+        sleep(500);
+        MoveBackward(DRIVE_SPEED, 10.5, 5 );//21.5 was the origional
+        ExtendArm(1, 2400, 5 );
+        GripperOpen();
+        SetArmPosition(ARM_STATUS_CLOSED);
+        MoveForward(DRIVE_SPEED, 5, 5);
+        shoulder_motor.setPower(-.5);
+        MoveLeft(DRIVE_SPEED, 29, 5); // used to be 32
+        shoulder_motor.setPower(0);
+        MoveForward(DRIVE_SPEED, 18, 5);//used to be 22
+
+        
+        
+        sleep(1000);
+       
+    }
+    
+	public void FastFood()
+    {
+        wrist_servo.setPower(0);
         MoveBackward(DRIVE_SPEED, 20, 5);
         ShoulderUp();
         ExtendArm(1, 500, 5 );
@@ -312,12 +376,9 @@ public class Auto_Main extends LinearOpMode {
         MoveForward(DRIVE_SPEED, 5, 5);
         MoveLeft(DRIVE_SPEED, 28, 5); // used to be 32
         MoveForward(DRIVE_SPEED, 18, 5); //used tto be 22
-        
-        
-        sleep(1000);
-       
+        sleep(1000);  
     }
-    
+
     public void Three_Specimen_Auto()
     {
         MoveBackward(DRIVE_SPEED, 21, 5);
